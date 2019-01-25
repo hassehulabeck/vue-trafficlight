@@ -30,7 +30,7 @@
       background-color: yellow;
     }
     .black {
-      background-color: black;
+      background-color: black !important;
     }
     ul {
       padding-inline-start: 0;
@@ -66,7 +66,52 @@
           color: "green",
           isDark: true
         }
-      ]
+      ],
+      counter: 0,
+      direction: "Down"
+    },
+    mutations: {
+      init(state, index) {
+        state.trafficLight[index].isDark = false;
+      },
+      change(state) {
+        if (this.state.counter == 2) {
+          this.state.counter--;
+          this.state.direction = "Up";
+        }
+        // Om vi är i andra änden, i det här fallet position 0.
+        else if (this.state.counter == 0) {
+          this.state.counter++;
+          this.state.direction = "Down";
+        }
+        else {
+          if (this.state.direction == "Up")
+            this.state.counter --;
+          else
+            this.state.counter ++;
+        }
+        // Tänd och släck ljus enligt positioner.
+        if (this.state.counter == 0) {
+            state.trafficLight[0].isDark = false;
+            state.trafficLight[1].isDark = true;
+            state.trafficLight[2].isDark = true;
+        }
+        if (this.state.counter == 2) {
+            state.trafficLight[0].isDark = true;
+            state.trafficLight[1].isDark = true;
+            state.trafficLight[2].isDark = false;
+        }
+        if (this.state.counter == 1 && this.state.direction == "Down") {
+            state.trafficLight[0].isDark = false;
+            state.trafficLight[1].isDark = false;
+            state.trafficLight[2].isDark = true;
+        }
+        if (this.state.counter == 1 && this.state.direction == "Up") {
+          state.trafficLight[0].isDark = true;
+          state.trafficLight[1].isDark = false;
+          state.trafficLight[2].isDark = true;
+        }
+      }
     }
   });
 
@@ -76,13 +121,29 @@
         return store.state.trafficLight;
       }
     },
+    methods: {
+      init() {
+        store.commit('init', 0);
+      },
+      change() {
+        store.commit('change');
+      }
+    },
+    mounted() {
+      this.init();
+    },
     template: `
       <div id="container" class="black">
         <ul>
           <li v-for="lampa, index in trafficLight" :key='index'>
-            <div :id=lampa.color class='lampa'></div>
+            <div
+              :id='lampa.color'
+              class='lampa'
+              v-bind:class="{black: lampa.isDark}" >
+              </div>
           </li>
         </ul>
+        <button v-on:click="change">Change</button>
       </div>
     `
   });
