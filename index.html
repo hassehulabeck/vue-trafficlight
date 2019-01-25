@@ -124,9 +124,6 @@
     methods: {
       init() {
         store.commit('init', 0);
-      },
-      change() {
-        store.commit('change');
       }
     },
     mounted() {
@@ -143,7 +140,6 @@
               </div>
           </li>
         </ul>
-        <button v-on:click="change">Change</button>
       </div>
     `
   });
@@ -152,6 +148,18 @@
     el: '#app',
     components: {
       'trafficlight': TrafficLight
+    },
+    methods: {
+      changer() {
+        store.commit('change');
+      }
+    },
+    mounted() {
+      window.addEventListener('keyup', function(event) {
+      if (event.keyCode === 13) {
+        app.changer();
+  }
+});
     }
   })
 </script>
